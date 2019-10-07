@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+
+
+
+
+</body>
+
+</html>
+
+<script>
+
+
+
+
+
+
+    // 三种状态
+    // pending 未决
+    // fulfilled 成功状态
+    // rejected 拒绝状态，也可以理解成失败状态
+
+
+    function MyPromise(executorFunction) {
+
+        this.status = 'padding' // 定义默认状态  未决
+        this.data = undefined // 用来存入resolve传递过来的值
+        this.reason = undefined // 用来存储reject传递过来的值
+        this.resolveCallbacks = [] // 存储then方法传递进来的第一个参数，成功的回调
+        this.rejectCallbacks = [] // 存储then方法传递进来的第二个参数，失败的回调
+
+        let resolve = (value) => {
+
+            if (this.status === 'padding') { //进行判断 成功状态和失败状态不允许进行改变
+                this.data = value; //返回成功的值
+                this.status = 'fulfilled' // 成功状态
+
+                // 将成功的回调全部执行，并且经this.data传递出去
+                this.resolveCallbacks.forEach(fun => fun(this.data))
+            }
+
+        };
+
+        let reject = (reason) => {
+            if (this.status === 'padding') { ////进行判断 成功状态和失败状态不允许进行改变
+                this.reason = reason; //返回失败的原因
+                this.status = 'rejected' // 拒绝状态，也可以理解成失败状态
+
+                // 将失败的回调全部执行，并且经this.reason传递出去
+                this.rejectCallbacks.forEach(fun => fun(this.reason))
+            }
+        };
+
+        // 调用执行函数
+        executorFunction(resolve, reject)
+    }
+
+
+
+
+    // 我们先明确then方法的功能：
+
+    // then方法必须返回一个新的Promise实例，这样才能进行链式回调
+    // then方法返回的新的Promise实例的状态依赖于当前实例的状态和回调返回值的状态
+    // 当前Promise状态确定后的回调返回值可以被新的实例拿到
+
+
+
+    // // then方法接收到参数，分别命名onResolved和onRejected
+    MyPromise.prototype.then = function (onResolved, onRejected) {
+
+        // 为了能进行链式调用 同样要返回一个promise
+        // 根据当前的实例的状态来给它赋值
+        let promise2
+
+        // 以上的代码都是基于处理异步代码，也就是then方法会早于resolve或者reject执行。
+        // 所以then里还需要做一步判断，即当前promise为pending状态时，再把回调push存放到相应的地方。
+        if (this.status === 'padding') {
+
+
+            promise2 = new MyPromise((resolve, reject) => {
+                // 声明一个成功函数
+                function successFn(value) {
+                    let x = onResolved(value)
+
+                    resolve_promise(promise2, x, resolve, reject)
+                }
+                // 声明一个失败函数
+                function failFn(value) {
+                    let x = onResolved(reason)
+
+                    resolve_promise(promise2, x, resolve, reject)
+                }
+
+                // 将成功函数push到当前实例的resolvedCallbacks
+                this.resolveCallbacks.push(successFn) // 将onResolved存起来
+                // 将失败函数push到当前实例的rejectedCallbacks
+                this.rejectCallbacks.push(failFn) // 将onRejected存起来
+
+            })
+
+
+
+        }
+
+        // 如果成功的状态直接走成功的回调
+        if (this.status === 'fulfilled') {
+
+
+            promise2 = new MyPromise((resolve, reject) => {
+                // 因为此时当前实例的resolve或者reject已经执行
+                // this.data或者this.reason
+                let x = onResolved(this.data)
+
+                resolve_promise(promise2, x, resolve, reject)
+            })
+        }
+
+        // 如果失败的状态直接走失败的回调
+        if (this.status === 'rejected') {
+
+
+            promise2 = new MyPromise((resolve, reject) => {
+                // 此时当前实例resolve或者reject已经执行
+                let x = onRejected(this.reason)
+
+                resolve_promise(promise2, x, resolve, reject)
+            })
+        }
+
+        return promise2
+
+    }
+
+    // 我们需要写一个函数resolve_promise 来对x进行处理，并确定promise2的状态
+    // 要写的resolve_promise接收4个参数，
+    // 一个是当前正在构造的promise2实例，
+    // 一个是通过当前回调拿到的结果x，
+    // resolve和reject是用来确定promise2状态的两个方法，
+    // 因为只有resolve或者reject被调用了，promise2的状态才能确定嘛
+    function resolve_promise(promise2, x, resolve, reject) {
+
+        if (x === promise2) {
+            // 如果x是promise2实例本身
+            reject(new TypeError('Chaining cycle detected for promise'))
+            return //这里return不用再往下了
+        }
+
+        // // 如果x是MyPromise的实例
+        if (x instanceof MyPromise) {
+            x.then(function (v) {
+                resolve_promise(promise2, x, resolve, reject)
+            }, function (t) {
+                reject(t)
+            })
+
+            return
+        }
+
+        if (x !== null && (typeof x === 'function' || typeof x === 'object')) {
+            //开关
+            // 控制resolvePromise和rejectPromise还有catch里reject的调用
+            let called = false
+
+            try { //then 可能有异常 需要补货
+                let then = x.then
+                if (typeof then === 'function') {
+                    // 有then方法，则调用，如果then方法并没有实际resolvePromise
+                    // 或者rejectPromise参数的话，promise2永远都是pending状态
+                    // 因为resolve和reject永远都不可能执行
+                    then.call(x,function resolvePromise(){
+                        if(called) return 
+                    })
+
+                }
+
+            } catch (e) {
+
+            }
+        }
+
+    }
+
+
+    let promise = new MyPromise(function (resolve, reject) {
+        setTimeout(() => {
+            let flag = Math.random() > 0.5 ? true : false
+            if (flag) {
+                resolve('success')
+            } else {
+                reject('fail')
+            }
+        }, 1000)
+    })
+    promise.then(res => {
+        console.log(res)
+    }, error => {
+        console.log(error)
+    })
+</script>
