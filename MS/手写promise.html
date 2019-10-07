@@ -40,24 +40,30 @@
 
         let resolve = (value) => {
 
-            if (this.status === 'padding') { //进行判断 成功状态和失败状态不允许进行改变
-                this.data = value; //返回成功的值
-                this.status = 'fulfilled' // 成功状态
+            setTimeout(() => {
+                if (this.status === 'padding') { //进行判断 成功状态和失败状态不允许进行改变
+                    this.data = value; //返回成功的值
+                    this.status = 'fulfilled' // 成功状态
 
-                // 将成功的回调全部执行，并且经this.data传递出去
-                this.resolveCallbacks.forEach(fun => fun(this.data))
-            }
+                    // 将成功的回调全部执行，并且经this.data传递出去
+                    this.resolveCallbacks.forEach(fun => fun(this.data))
+                }
+            })
 
         };
 
         let reject = (reason) => {
-            if (this.status === 'padding') { ////进行判断 成功状态和失败状态不允许进行改变
-                this.reason = reason; //返回失败的原因
-                this.status = 'rejected' // 拒绝状态，也可以理解成失败状态
 
-                // 将失败的回调全部执行，并且经this.reason传递出去
-                this.rejectCallbacks.forEach(fun => fun(this.reason))
-            }
+            setTimeout(() => {
+                if (this.status === 'padding') { ////进行判断 成功状态和失败状态不允许进行改变
+                    this.reason = reason; //返回失败的原因
+                    this.status = 'rejected' // 拒绝状态，也可以理解成失败状态
+
+                    // 将失败的回调全部执行，并且经this.reason传递出去
+                    this.rejectCallbacks.forEach(fun => fun(this.reason))
+                }
+            })
+
         };
 
         // 调用执行函数
@@ -78,6 +84,20 @@
     // // then方法接收到参数，分别命名onResolved和onRejected
     MyPromise.prototype.then = function (onResolved, onRejected) {
 
+        // 设置 onResovled 的默认值
+        if (typeof onResolved !== 'function') {
+            onResolved = function (value) {
+                return value
+            }
+        }
+
+        // 设置 onRejected的 默认值
+        if (typeof onRejected !== 'function') {
+            onRejected = function (reason) {
+                return reason
+            }
+        }
+
         // 为了能进行链式调用 同样要返回一个promise
         // 根据当前的实例的状态来给它赋值
         let promise2
@@ -90,15 +110,22 @@
             promise2 = new MyPromise((resolve, reject) => {
                 // 声明一个成功函数
                 function successFn(value) {
-                    let x = onResolved(value)
-
-                    resolve_promise(promise2, x, resolve, reject)
+                    // 为了防止报错终止程序 用try进行捕获
+                    try {
+                        let x = onResolved(value)
+                        resolve_promise(promise2, x, resolve, reject)
+                    } catch (e) {
+                        reject(e)
+                    }
                 }
                 // 声明一个失败函数
-                function failFn(value) {
-                    let x = onResolved(reason)
-
-                    resolve_promise(promise2, x, resolve, reject)
+                function failFn(reason) {
+                    try {
+                        let x = onResolved(reason)
+                        resolve_promise(promise2, x, resolve, reject)
+                    } catch (e) {
+                        reject(e)
+                    }
                 }
 
                 // 将成功函数push到当前实例的resolvedCallbacks
@@ -114,26 +141,33 @@
 
         // 如果成功的状态直接走成功的回调
         if (this.status === 'fulfilled') {
-
-
             promise2 = new MyPromise((resolve, reject) => {
                 // 因为此时当前实例的resolve或者reject已经执行
                 // this.data或者this.reason
-                let x = onResolved(this.data)
-
-                resolve_promise(promise2, x, resolve, reject)
+                setTimeout(() => {//为了能异步执行
+                    try {
+                        let x = onResolved(this.data)
+                        resolve_promise(promise2, x, resolve, reject)
+                    } catch (e) {
+                        reject(e)
+                    }
+                })
             })
         }
 
         // 如果失败的状态直接走失败的回调
         if (this.status === 'rejected') {
-
-
             promise2 = new MyPromise((resolve, reject) => {
                 // 此时当前实例resolve或者reject已经执行
-                let x = onRejected(this.reason)
+                setTimeout(() => {//为了能异步执行
+                    try {
+                        let x = onRejected(this.reason)
+                        resolve_promise(promise2, x, resolve, reject)
+                    } catch (e) {
+                        reject(e)
+                    }
 
-                resolve_promise(promise2, x, resolve, reject)
+                })
             })
         }
 
@@ -177,18 +211,90 @@
                     // 有then方法，则调用，如果then方法并没有实际resolvePromise
                     // 或者rejectPromise参数的话，promise2永远都是pending状态
                     // 因为resolve和reject永远都不可能执行
-                    then.call(x,function resolvePromise(){
-                        if(called) return 
+                    then.call(x, function resolvePromise() {
+                        if (called) return
+                        called = true
+                        resolve_promise(promise2, x, resolve, reject)
+                    }, function rejectPromise(reason) {
+                        if (called) return
+                        called = true
+                        reject(reason)
                     })
 
+                } else {
+                    // 如果then不是一个函数直接resolve
+                    resolve(x)
                 }
 
             } catch (e) {
-
+                if (called) return
+                called = true
+                reject(e)
             }
+        } else {
+            resolve(x)
         }
 
     }
+
+
+    // 参数：是一个MyPromise实例组成的数组
+    // 返回一个MyPromise实例，不过要等到所有的参数里所有的promise状态确定
+    // 参数的实例中，只要有一个是reject，返回的promise就是reject状态
+    MyPromise.all = function (arr) {
+        return new MyPromise(function (resolve, reject) {
+            let result = new Array(arr.length)
+            let count = 0
+            for (let i = 0; i < arr.length; i++) {
+                let currentPromise = arr[i]
+                currentPromise.then(function (res) {
+                    result[i] = res
+                    count++
+                    if (count === arr.length) {
+                        resolve(result)
+                    }
+                }, function (reason) {
+                    reject(reason)
+                })
+            }
+        })
+    }
+
+    // 接收一个函数作为参数
+    // 当then出现问题时会执行这个函数
+    MyPromise.prototype.catch = function (failFn) {
+        this.then(null, function (reason) {
+            failFn(reason)
+        })
+    }
+
+    //     接收一个promise实例构成的数组，返回一个MyPromise实例
+    // 当参数里的promise第一个状态确认时，把它作为成功或者失败的值返回一个新实例
+    MyPromise.race = function (arr) {
+        return new MyPromise(function (resolve, reject) {
+            arr.forEach(promise => {
+                promise.then(resolve, reject)
+            })
+        })
+    }
+
+
+    MyPromise.resolve = function (value) {
+        return new MyPromise(function (resolve, reject) {
+            resolve(value)
+        })
+    }
+
+
+    MyPromise.reject = function (reason) {
+        return new MyPromise(function (resolve, reject) {
+            reject(reason)
+        })
+    }
+
+
+
+
 
 
     let promise = new MyPromise(function (resolve, reject) {
