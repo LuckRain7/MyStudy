@@ -31,6 +31,8 @@
 
 
     function MyPromise(executorFunction) {
+        console.log(executorFunction);
+ 
 
         this.status = 'padding' // 定义默认状态  未决
         this.data = undefined // 用来存入resolve传递过来的值
@@ -44,7 +46,8 @@
                 if (this.status === 'padding') { //进行判断 成功状态和失败状态不允许进行改变
                     this.data = value; //返回成功的值
                     this.status = 'fulfilled' // 成功状态
-
+                    console.log(this.resolveCallbacks[0]);
+                    
                     // 将成功的回调全部执行，并且经this.data传递出去
                     this.resolveCallbacks.forEach(fun => fun(this.data))
                 }
@@ -81,7 +84,9 @@
 
 
 
-    // // then方法接收到参数，分别命名onResolved和onRejected
+    //  then方法接收到参数，分别命名onResolved和onRejected
+    // onResolved 成功的回调函数 onRejected 失败的回调函数
+
     MyPromise.prototype.then = function (onResolved, onRejected) {
 
         // 设置 onResovled 的默认值
@@ -91,7 +96,7 @@
             }
         }
 
-        // 设置 onRejected的 默认值
+        // 设置 onRejected 的默认值
         if (typeof onRejected !== 'function') {
             onRejected = function (reason) {
                 return reason
@@ -205,7 +210,7 @@
             // 控制resolvePromise和rejectPromise还有catch里reject的调用
             let called = false
 
-            try { //then 可能有异常 需要补货
+            try { //then 可能有异常 需要捕获
                 let then = x.then
                 if (typeof then === 'function') {
                     // 有then方法，则调用，如果then方法并没有实际resolvePromise
@@ -299,7 +304,7 @@
 
     let promise = new MyPromise(function (resolve, reject) {
         setTimeout(() => {
-            let flag = Math.random() > 0.5 ? true : false
+            let flag =  true
             if (flag) {
                 resolve('success')
             } else {
