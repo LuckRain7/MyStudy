@@ -32,3 +32,6 @@
 
 - [x] MySQL-link
 
+##### JavaScript
+
+- [x] 阅读器插件自动播放
