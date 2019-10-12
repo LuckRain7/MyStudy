@@ -44,7 +44,8 @@ EventEmitter.prototype.on = function (type, cb, flag) {
             this._events[type].push(cb);
         }
     }
-
+    
+    
     if (this._events[type].length === this.getMaxListeners()) {
         console.warn('警告--监听的事件不能超过了设置的最大监听数')
     }
