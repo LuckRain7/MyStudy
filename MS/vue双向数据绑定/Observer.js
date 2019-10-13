@@ -34,6 +34,8 @@ class Observer {
                 return value;
             },
             set: (newValue) => {
+                console.log('set');
+                
                 if (value != newValue) {
                     this.observer(newValue);
                     value = newValue;
