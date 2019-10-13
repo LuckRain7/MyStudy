@@ -39,8 +39,6 @@ class Compiler {
         if (/\{\{(.+?)\}\}/.test(content)) {
             CompileUtil['text'](node, content, this.vm);
         }
-
-
     }
 
     // 编译内存中的DOM节点
@@ -79,7 +77,7 @@ class Compiler {
 }
 
 // 处理指令
-CompileUtil = {
+const CompileUtil = {
     /**
      * 通过表达式在实例中取到对应的数据
      * @param {*} vm vue实例
@@ -90,26 +88,55 @@ CompileUtil = {
         return expr.split('.').reduce((data, current) => {
             return data[current];
         }, vm.$data)
-
-
+    },
+    setVal(vm, expr, value) {
+        return expr.split('.').reduce((data, current, index, arr) => {
+            // 判断最后一项 进行赋值
+            if (  index == arr.length - 1) {
+                return data[current] = value;
+            }
+            return data[current];
+        }, vm.$data)
     },
     /**
-     * 处理v-model指令
+     * 处理 v-model 指令
      * @param {*} node 节点 DOM节点
      * @param {*} expr 表达式  message.name
      * @param {*} vm 当前实例 Vue实例 其中包含data数据
      */
     model(node, expr, vm) {
         let fn = this.updater['modelUpdater'];
+
+        // 添加观察者
+        // 给输入框添加一个观察着 如果稍后数据更新了会触发此方法，会拿新值给输入框赋值
+        new Watcher(vm, expr, (newVal) => {
+            fn(node, newVal);
+        });
+        node.addEventListener('input', (e) => {
+            let newValue = e.target.value; // 获取用户输入的内容
+            this.setVal(vm, expr, newValue);//更新方法
+        });
         let value = this.getVal(vm, expr); // 拿到的是 zzy
         fn(node, value);
     },
     html() {
 
     },
+    getContentValue(vm, expr) {
+        // 遍历表达式  将内容 重新替换成一个完整的内容 返回回去
+        return expr.replace(/\{\{(.+?)\}\}/g, (...args) => {
+            return this.getVal(vm, args[1]);
+        })
+    },
     text(node, expr, vm) {
         let fn = this.updater['textUpdater'];
         let content = expr.replace(/\{\{(.+?)\}\}/g, (...args) => {
+            // 给表达式每个{{}} 添加观察者
+            new Watcher(vm, args[1], (newVal) => {
+                // 不能把全部的替换了 只替换其中的部分
+                let allContent = this.getContentValue(vm, expr);//返回一个全的字符串
+                fn(node, allContent);
+            });
             // args是 前面匹配返回的结果  args[1]=> message.name
             return this.getVal(vm, args[1]);
         });

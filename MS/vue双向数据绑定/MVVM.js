@@ -16,7 +16,7 @@ class Vue {
             console.log(this.$data);
             
             // 编译
-            new Compiler(this.$el, this)
+            new Compiler(this.$el, this);
         }
     }
 }

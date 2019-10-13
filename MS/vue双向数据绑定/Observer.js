@@ -20,6 +20,7 @@ class Observer {
     defineReactive(obj, key, value) {
 
         this.observer(value);//递归进行
+        let dep = new Dep();//给每一个属性，都加上一个具有发布订阅的功能
 
         // obj 要在其上定义属性的对象。
         // prop 要定义或修改的属性的名称。
@@ -27,12 +28,16 @@ class Observer {
         // Object.defineProperty(obj, prop, descriptor)
         Object.defineProperty(obj, key, {
             get() {
+                // 创建watcher 时 会取到对应的内容，并且把watcher放到全局上
+                Dep.target && dep.addSub(Dep.target);
+                // console.log(dep);
                 return value;
             },
             set: (newValue) => {
                 if (value != newValue) {
                     this.observer(newValue);
                     value = newValue;
+                    dep.notify();
                 }
             }
         });
