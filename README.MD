@@ -5,7 +5,7 @@
 - [x] 1、手写一个 new 操作符
 - [x] 2、手写数组乱序 
 - [ ] 3、手写一个JSON.stringify和JSON.parse
-- [ ] 4、手写一个call或apply
+- [x] 4、手写一个call或apply
 - [ ] 5、手写一个Function.bind
 - [ ] 6、手写一个继承
 - [ ] 7、手写一个JS函数柯里化和反柯里化
