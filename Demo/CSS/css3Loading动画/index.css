@@ -1,0 +1,44 @@
+#loading-1 {
+  position: relative;
+  width: 300px;
+  height: 80px;
+  margin: 200px auto;
+}
+
+#loading-1 span {
+  position: absolute;
+  bottom: 0;
+  display: inline-block;
+  width: 10px;
+  height: 20px;
+  background-color: orchid;
+  animation-name: loading_one; /* 定义动画名字 */
+  animation-duration: 1s; /* 定义动画时长 */
+  animation-iteration-count: infinite;
+}
+
+#loading-1 .item.item-1 {
+  left: 10px;
+  animation-delay: -0.9s;/* 定义动画开始时间 */
+}
+#loading-1 .item.item-2 {
+  left: 30px;
+  animation-delay: -0.8s;
+}
+#loading-1 .item.item-3 {
+  left: 50px;
+  animation-delay: -0.7s;
+}
+
+/* 定义动画执行 20 -> 80 */
+@keyframes loading_one {
+  0% {
+    bottom: 0;
+  }
+  50% {
+    bottom: 25px;
+  }
+  100% {
+    bottom: 0;
+  }
+}

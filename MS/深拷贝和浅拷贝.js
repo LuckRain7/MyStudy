@@ -32,7 +32,7 @@ function deepClone(obj, hash = new WeakMap()) {
 
 let obj = { name: 'zzy', age: 18 }
 obj.other = obj
-let d = deepClone(obj);
+let d = deepClone(obj)
 d.age = 20
-console.log(obj);
-console.log(d.other);
+console.log(obj)
+console.log(d.other)
