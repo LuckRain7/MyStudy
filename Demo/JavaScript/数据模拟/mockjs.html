@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="http://mockjs.com/dist/mock.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    <script>
+        //输入与之匹配的请求 URL地址进行拦截
+        //提供相应的模板进行数据的返回
+        Mock.mock('http://192.23.46.23:8909/people', { 'name': 'test', 'age|20-60': 25 })
+        
+
+        $.ajax({
+            url: 'http://192.23.46.23:8909/people',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+            }
+        })
+
+    </script>
+</head>
+
+<body>
+    <div>
+        hello world
+    </div>
+</body>
+
+</html>
