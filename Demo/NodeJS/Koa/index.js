@@ -10,6 +10,39 @@ const main = require('./ctx.js')
 const handlingErrors = async (ctx, next) => {
     try {
         await next();
+        // console.log(ctx.request.header); 请求标头对象。
+        console.log(ctx.request.method); //请求方法。GET POST
+        console.log('获取请求 URL ',ctx.request.url); 
+        console.log('获取请求原始URL',ctx.request.originalUrl); 
+        console.log('获取URL的来源，包括 protocol 和 host ',ctx.request.origin); 
+        console.log('获取完整的请求URL，包括 protocol，host 和 url ',ctx.request.href); 
+        console.log('获取请求路径名。 ',ctx.request.path); 
+        console.log('根据 ? 获取原始查询字符串。 ',ctx.request.querystring); 
+        console.log('使用 ? 获取原始查询字符串(带问号) ',ctx.request.search); 
+        console.log('hostname:port => ',ctx.request.host); 
+        console.log('存在时获取主机名 => ',ctx.request.hostname); 
+        // console.log('获取 WHATWG 解析的 URL 对象=> ',ctx.request.URL); 
+        console.log('获取请求 Content-Type => ',ctx.request.type); 
+        console.log('在存在时获取请求字符集 => ',ctx.request.charset); 
+        console.log('获取解析的查询字符串 => ',ctx.request.query); 
+        console.log('检查请求缓存是否“新鲜”，也就是内容没有改变 => ',ctx.request.fresh); 
+        console.log('相反与 request.fresh => ',ctx.request.stale); 
+        console.log('返回请求协议，“https” 或 “http” => ',ctx.request.protocol); 
+        console.log('通过 ctx.protocol == "https" 来检查请求是否通过 TLS 发出 => ',ctx.request.secure); 
+        console.log('请求远程地址 => ',ctx.request.ip); 
+        console.log('请求远程地址 => ',ctx.request.ips); 
+        console.log('将子域返回为数组。 => ',ctx.request.subdomains); 
+        console.log('检查传入请求是否包含 Content-Type 头字段 => ',ctx.is('html')); 
+        console.log('检查给定的 type(s) 是否可以接受 => ',ctx.request.accepts('text/html')); 
+        console.log('检查 encodings 是否可以接受，返回最佳匹配为 true，否则为 false => ',ctx.request.acceptsEncodings(['gzip', 'deflate', 'identity'])); 
+        console.log('检查 charsets 是否可以接受 在 true 时返回最佳匹配 => ',ctx.request.acceptsCharsets(['utf-8', 'utf-7'])); 
+        console.log('检查 langs 是否可以接受，如果为 true，返回最佳匹配 => ',ctx.request.acceptsLanguages(['en', 'es'])); 
+        console.log('检查请求是否是幂等的 => ',ctx.request.idempotent); 
+        console.log('返回请求套接字 => ',ctx.request.socket); 
+        // console.log('返回请求标头 => ',ctx.request.get); 
+
+
+
     } catch (err) {
         ctx.response.status = err.statusCode || err.status || 500
         ctx.response.body = {
@@ -114,6 +147,40 @@ const fileUp = async function (ctx) {
 app.use(route.post('/fileUp', fileUp))
 
 
+// app.context 通过编辑 app.context 为 ctx 添加其他属性
+app.context.db =function(){
+    console.log(1);
+}
+const useContext  = ctx =>{
+    console.log(ctx.db());// 1
+    ctx.state.user = 'zzy';//推荐的命名空间，用于通过中间件传递信息和你的前端视图。
+    ctx.assert(ctx.state.user, 401, 'User not found. Please login!');//断言
+    ctx.assert.equal('object', typeof ctx, 500, '某些开发错误')
+
+    // ctx.response.header 响应标头对象。
+    // ctx.response.socket 响应套接字。
+    // ctx.response.status = 200  //获取响应状态 有约定表
+    // ctx.response.message = 'ok'  //将响应的状态消息设置为给定值
+    // ctx.response.length = 4  //将响应的 Content-Length 设置为给定值。
+    // response.get(field) 不区分大小写获取响应标头字段值 field。
+    ctx.set('Access-Control-Allow-Origin', '*')// 设置响应标头 field 到 value:
+    ctx.append('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS'); //用值 val 附加额外的标头 field。
+    ctx.remove('Access-Control-Allow-Methods') //删除标头 field。
+    ctx.type = 'text/plain; charset=utf-8' //设置响应 Content-Type 通过 mime 字符串或文件扩展名。
+    // ctx.redirect('/') // 重定向
+    // response.attachment([filename], [options]) 将 Content-Disposition 设置为 “附件” 以指示客户端提示下载。(可选)指定下载的 filename 和部分 参数。
+    // response.headerSent 检查是否已经发送了一个响应头。 用于查看客户端是否可能会收到错误通知。
+    // ctx.response.lastModified = new Date() 将 Last-Modified 标头返回为 Date, 如果存在。
+    // ctx.response.etag = crypto.createHash('md5').update(ctx.body).digest('hex'); 设置包含 " 包裹的 ETag 响应， 请注意，没有相应的 response.etag getter。
+    // response.vary(field) 在 field 上变化。
+    // response.flushHeaders() 刷新任何设置的标头，并开始主体。
+
+
+
+    ctx.response.body = ctx.response
+}
+app.use(route.get('/useContext', useContext))
+
 
 app.listen(4000);//是下面的语法糖
 // const http = require('http');
@@ -122,3 +189,13 @@ app.listen(4000);//是下面的语法糖
 // const app = new Koa();
 // http.createServer(app.callback()).listen(3000);
 // https.createServer(app.callback()).listen(3001);
+
+
+// 常用中间件
+// koa-compress
+// koa-respond
+// kcors
+// koa-convert
+// koa-bodyparser
+// koa-compose
+// koa-router
