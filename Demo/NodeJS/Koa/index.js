@@ -189,13 +189,3 @@ app.listen(4000);//是下面的语法糖
 // const app = new Koa();
 // http.createServer(app.callback()).listen(3000);
 // https.createServer(app.callback()).listen(3001);
-
-
-// 常用中间件
-// koa-compress
-// koa-respond
-// kcors
-// koa-convert
-// koa-bodyparser
-// koa-compose
-// koa-router
