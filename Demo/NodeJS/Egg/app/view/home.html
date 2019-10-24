@@ -10,6 +10,9 @@
 
 <body>
     <form action="/add?_csrf=<%=csrf%>" method="POST">
+        <!-- 也可以使用隐藏的表达域进行post
+            <input type="hidden" name="_csrf" value="<%=csrf%>"/>
+         -->
         用户名：<input type="text" name="username" /><br><br>
         密码：<input type="password" name="password" /><br><br>
         <button type="submit">提交</button>

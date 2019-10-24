@@ -16,10 +16,17 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1571797572547_3421';
 
   // add your middleware config here
-  config.middleware = [ 'printdate', 'forbindip' ];
+  config.middleware = [ 'printdate', 'forbindip', 'auth' ];
   // 给中间件传值
   config.printdate = {
     value: '给中间件printdate穿的值，在中间件options中拿到',
+  };
+
+  config.session = {
+    key: 'EGG_SESS',
+    maxAge: 24 * 3600 * 1000, // 1 天
+    httpOnly: true,
+    encrypt: true,
   };
 
   // add your user config here

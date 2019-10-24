@@ -4,8 +4,13 @@ const Controller = require('egg').Controller;
 
 class NewsController extends Controller {
   async index() {
-    // this.ctx.body = '新闻爬虫';
-    // await ctx.render('news/index.html');
+
+    // 获取cookie
+    const userInfo = this.ctx.cookies.get('username', {
+      signed: true, // 获取加密的cookie也需要这个参数
+    });
+    console.log('获取到的cookie：', userInfo);
+
     const list = await this.service.news.getNewsList();
     await this.ctx.render('news/news.html', {
       list,
