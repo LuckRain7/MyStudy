@@ -16,7 +16,11 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1571797572547_3421';
 
   // add your middleware config here
-  config.middleware = [];
+  config.middleware = [ 'printdate', 'forbindip' ];
+  // 给中间件传值
+  config.printdate = {
+    value: '给中间件printdate穿的值，在中间件options中拿到',
+  };
 
   // add your user config here
   const userConfig = {
