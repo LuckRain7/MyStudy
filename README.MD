@@ -13,7 +13,7 @@
 - [x] 9、手写防抖和节流
 - [x] 10、手写一个JS深拷贝
 - [ ] 11、手写一个map和reduce
-- [ ] 12、手写实现拖拽
+- [x] 12、手写实现拖拽
 - [ ] 13、使用setTimeout模拟setInterval
 - [ ] 14、手写实现Object.create的基本原理
 - [ ] 15、手写实现一个基本的Event Bus
