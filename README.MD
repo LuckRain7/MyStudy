@@ -18,6 +18,7 @@
 - [ ] 14、手写实现Object.create的基本原理
 - [ ] 15、手写实现一个基本的Event Bus
 - [x] 16、实现MVVM
+- [x] 17、虚拟DOM
 
 
 
@@ -31,6 +32,7 @@
 
 - [x] MySQL-link
 - [x] Koa
+- [x] Egg
 
 ##### JavaScript
 
