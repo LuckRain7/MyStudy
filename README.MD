@@ -45,3 +45,7 @@
 
 - [x] css3实现loading动画
 
+##### AJAX
+
+- [x] axios 常规设置封装
+
