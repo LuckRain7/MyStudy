@@ -1,0 +1,23 @@
+{
+  "name": "studytogithub",
+  "version": "1.0.0",
+  "description": "- [x] 1、手写一个 new 操作符\r - [x] 2、手写数组乱序 \r - [ ] 3、手写一个JSON.stringify和JSON.parse\r - [x] 4、手写一个call或apply\r - [ ] 5、手写一个Function.bind\r - [ ] 6、手写一个继承\r - [ ] 7、手写一个JS函数柯里化和反柯里化\r - [x] 8、手写一个Promise\r - [x] 9、手写防抖和节流\r - [x] 10、手写一个JS深拷贝\r - [ ] 11、手写一个map和reduce\r - [x] 12、手写实现拖拽\r - [ ] 13、使用setTimeout模拟setInterval\r - [ ] 14、手写实现Object.create的基本原理\r - [ ] 15、手写实现一个基本的Event Bus\r - [x] 16、实现MVVM\r - [x] 17、虚拟DOM",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ture7Rain/MyStudy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ture7Rain/MyStudy/issues"
+  },
+  "homepage": "https://github.com/Ture7Rain/MyStudy#readme",
+  "dependencies": {
+    "axios": "^0.19.0"
+  }
+}
