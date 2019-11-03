@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Ture7Rain/MyStudy#readme",
   "dependencies": {
-    "axios": "^0.19.0"
+    "axios": "^0.19.0",
+    "vuex-persistedstate": "^2.7.0"
   }
 }
