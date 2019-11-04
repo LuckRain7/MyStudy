@@ -1,0 +1,10 @@
+.wrap{
+    width: 540px;
+    height: 258px;
+    margin: 100px auto;
+    background-color: orange;
+}
+
+.wrap canvas{
+    background:url(./img/coupon.jpg) no-repeat 0 0/100% 100% ;
+}

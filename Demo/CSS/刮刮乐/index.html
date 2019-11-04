@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>刮刮乐</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="wrap">
+        <!-- 面板 -->
+        <canvas id="myCanvas" width="540" height="258"></canvas>
+    </div>
+</body>
+
+</html>
+<script>
+    ; (function () {
+        /** @type {HTMLCanvasElement} */
+        // 画布
+        let canvas = document.getElementById('myCanvas'),
+            x, y;
+        // 画笔
+        let pencil = canvas.getContext('2d')
+        // fillRect(x,y,width,height)
+        // pencil.fillRect(100,100,100,100)
+
+        // 绘制路径
+        // pencil.beginPath();
+        // pencil.moveTo(100,0); //起始点
+        // pencil.lineTo(300,200); //终止点
+        // pencil.stroke();
+
+        let couponCover = new Image();
+        couponCover.src = './img/coupon_cover.png'
+
+
+        let init = function () {
+            bindEvent()
+        }
+
+        // void ctx.drawImage(image, dx, dy, dWidth, dHeight);
+        function bindEvent() {
+            couponCover.addEventListener('load', drawMask, false)
+        }
+
+        function drawMask() {
+            pencil.drawImage(couponCover, 0, 0, 540, 258)
+            canvas.addEventListener('mousedown', function (e) {
+                mouseDown(e)
+                canvas.addEventListener('mousemove', mouseMove, false)
+                canvas.addEventListener('mouseup', mouseUp, false)
+            }, false)
+
+        }
+
+        function mouseDown(e) {
+            setXY(e)
+            pencil.beginPath();
+            pencil.moveTo(x, y); //起始点
+        }
+
+        function mouseMove(e) {
+            pencil.lineWidth = '20'
+            pencil.globalCompositeOperation = 'destination-out' //变为透明
+            setXY(e)
+            pencil.lineTo(x, y)
+            pencil.stroke()
+        }
+
+        function mouseUp(e) {
+            canvas.removeEventListener('mousemove', mouseMove, false)
+            canvas.removeEventListener('mouseup', mouseUp, false)
+        }
+
+        function setXY(e) {
+            // x = 落笔点记录页面左面的距离 - 灰色图层距离页面的距离
+            let offset = canvas.getBoundingClientRect()
+            x = e.pageX - offset.left
+            y = e.pageY - offset.top
+        }
+        init()
+    })();
+</script>
