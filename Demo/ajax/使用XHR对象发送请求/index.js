@@ -3,7 +3,12 @@ const postBtn = document.getElementById('post-btn')
 
 const sendHttpRequest = (method, url, data) => {
     const promise = new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest() //创建一个xhr对象
+        const xhr; //创建一个xhr对象
+        if (window.XMLHttpRequest) {
+            xhr = new XMLHttpRequest()
+        } else {
+            xhr = new ActiveXObject()
+        }
 
         xhr.open(method, url) //为发送一个http请求做准备
 
