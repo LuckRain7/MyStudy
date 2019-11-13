@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>面向对象</title>
+</head>
+
+<body>
+</body>
+
+</html>
+<script>
+    function Fn() {
+        this.x = 100
+        this.y = 200
+        // 只要创建一个实例 就会开辟一个空间地址,解决这一问题 使用 prototype
+        // this.getX = function(){
+        //     console.log(this.x);
+        // }
+    }
+
+    // 只要是Fn的实例 都共用这一个getX：减少大量的堆内存
+    Fn.prototype.getX = function () {
+        console.log(this.x);
+    }
+
+    let f1 = new Fn()
+    let f2 = new Fn()
+
+    console.log(f1.x === f2.x); //true 
+    console.log(f1.getX === f2.getX); // false  prototype：true
+
+    // in 可以检测该属性是否是它的一个属性
+    // console.log('x' in f1); //true
+    // hasOwnProperty
+    // console.log(f1.hasOwnProperty('x')); //true
+
+    // f1.getX:f1通过__proto__找到Fn的prototype这个空间，然后找到里边的getX方法
+    // 1、每一个函数天生自带一个prototype属性，其属性值是一个对象数据类型的
+    // 2、这个prototype的属性里边天生自带一个constructor属性，constructor的属性值指向当前原型所属的类
+    // 3、每一个对象天生自带一个__proto__属性，其属性指向当前实例所属类的原型
+    console.log(Fn.prototype.constructor === Fn);
+
+
+    console.log(f1.hasOwnProperty);
+
+    // 原型链机制：当获取对象，属性名对应的属性值时，首先会查找自己的私有属性，如果没有，会默认通过__proto__向上查找，如果上一级也没有，会继续通过__proto__向上查找，知道Object的原型为止，如果Object的原型也没有，那么输出undefined
+
+</script>
