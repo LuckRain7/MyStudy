@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+</body>
+
+</html>
+<script>
+    let ary = [10, 24, 5, 6, 2]
+    // 内置类的原型不允许直接覆盖其原有的空间地址，但是自定义类的原型空间地址可以直接修改
+    Array.prototype = {//这样写无效
+        push: function () {
+            console.log(1000)
+        }
+    }
+
+    ary.push(1)
+
+
+
+    Array.prototype.myPush = function (...value) {
+        this[this.length] = value
+        return this.length
+    }
+    ary.push(100)
+
+    console.log(ary);
+
+    Array.prototype.myIndexOf = function (val) {
+        for (let i = 0; i < this.length; i++) {
+            if (this[i] === val) {
+                return i
+            }
+        }
+        return -1;
+    }
+
+    console.log(ary.myIndexOf(10))
+
+</script>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script>
+    let obj = {}
+
+    console.log(obj.call); //undefined
+
+
+    function fn() {
+
+    }
+    console.log(fn.hasOwnProperty) // 能找到 object上面的这个方法
+
+    // Function 内置类；所有的函数都是Function的一个实例
+    // Object 内置类：所有的对象都是Object的一个实例；所有的对象都可以用过__proto__找到Object原型
+    console.log(Array instanceof Function); //true
+    console.log(fn instanceof Function); //true
+    console.log(Object instanceof Function); //true
+
+
+    // 理解原型链
+    console.log(Function.prototype === Object.__proto__);
+    console.log(Function.prototype === Function.__proto__);
+    console.log(Function.__proto__.__proto__ === Object.prototype);
+
+
+
+
+
+
+
+
+</script>
