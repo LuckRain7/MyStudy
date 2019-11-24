@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .kuang {
+            text-align: center;
+            margin-top: 200px;
+        }
+
+        #mess {
+            text-align: center
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mess"></div>
+    <script src="./js/socket.io.js"></script>
+    <script>
+        var mess = document.getElementById("mess");
+        // 跨域地址
+        // TODO: 这里注意一下 不能写127.0.0.1 或者localhost 不然其他客户端访问不到
+        const socket = io('192.168.1.115:8001')
+
+        socket.on('connect', () => {
+            // 连接成功
+            socket.send('PC')
+            // 监听连接
+            socket.on('message', (msg) => {
+                mess.innerHTML = msg
+                // console.log(msg)
+            })
+            // 关闭连接
+            socket.on('disconnect', () => {
+
+            })
+        })
+    </script>
+</body>
+
+</html>

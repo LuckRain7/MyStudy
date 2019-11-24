@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        .kuang {
+            text-align: center;
+            margin-top: 200px;
+        }
+
+        #mess {
+            text-align: center
+        }
+
+        .value {
+            width: 200px;
+            height: 200px;
+            border: 1px solid;
+            text-align: center;
+            line-height: 200px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mess">正在连接...</div>
+    <div class="kuang">
+        <div class="value" id="value1">aaaaaaa</div>
+        <div class="value" id="value2">bbbbbbb</div>
+        <div class="value" id="value3">ccccccc</div>
+    </div>
+    <script src="https://cdn.bootcss.com/socket.io/2.3.0/socket.io.js"></script>
+    <script>
+        // 跨域地址
+        const socket = io('192.168.3.2:3000')
+
+        socket.on('connect', () => {
+            // 连接成功
+            socket.send('Pad')
+            // 监听连接
+            socket.on('message', (msg) => {
+                document.getElementById('mess').innerHTML = msg
+                // console.log(msg)
+            })
+            // 关闭连接
+            socket.on('disconnect', () => {
+
+            })
+        })
+
+        document.querySelector(".kuang").onclick = (e) => {
+            socket.send(e.target.innerHTML);
+        }
+
+
+    </script>
+</body>
+
+</html>
